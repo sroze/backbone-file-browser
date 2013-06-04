@@ -1,0 +1,22 @@
+<% if (selection && selection.length > 0) { %>
+    <% if (selection.length == 1) { var file = selection.at(0); %>
+    <h2><%= file.get('name') %></h2>
+    <div class="row-fluid" id="size">
+        <div class="span4 label">Size</div>
+        <div class="span8 value"><%= file.isFile() ? displaySize(this.model.at(0).getMetadata("size")) : '-' %></div>
+    </div>
+    <% }Êelse { var files = selection.toArray(), sum = 0; %>
+    <h2>Selection (<%= selection.length %>)</h2>
+        <% for (var i = 0; i < files.length; i++) { var file = files[i]; sum += file.isFile() ? parseInt(file.getMetadata("size")) : 0; %>
+        <div class="row-fluid size">
+            <div class="span9 name"><%= file.get("name") %></div>
+            <div class="span3 label"><%= file.isFile() ? displaySize(file.getMetadata("size")) : '-' %></div>
+        </div>
+        <% } %>
+    <div class="row-fluid size">
+        <div class="span9 right"><em>Total</em></div>
+        <div class="span3 label"><%= displaySize(sum) %></div>
+    </div>
+<% } else { %>
+No file selected. @todo
+<% } %>

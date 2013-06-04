@@ -1,0 +1,45 @@
+<div class="browser-bar" id="browser-bar">
+    <a id="settings-button" class="dropdown-toggle" data-toggle="dropdown">
+        <i></i>
+    </a>
+    <ul class="dropdown-menu pull-right" id="settings">
+        <li id="type-toggle">
+            <div class="btn-group" id="btn-group-list-type">
+                <button class="btn" id="btn-list-list" rel="tooltip" title="List view"><i></i></button>
+                <button class="btn" id="btn-list-icons" rel="tooltip" title="Icons view"><i></i></button>
+            </div>
+        </li>
+        <li class="dropdown-submenu pull-left" id="display-columns-toggle">
+            <a tabindex="-1" href="#">
+                Displayed columns
+            </a>
+            <ul class="dropdown-menu" id="dd-menu-columns">
+                <li><input type="checkbox"> Name</li>
+                <li><input type="checkbox"> Size</li>
+                <li><input type="checkbox"> Your rating</li>
+            </ul>
+        </li>
+        <li class="dropdown-submenu pull-left" id="sort-toggle">
+            <a tabindex="-2" href="#">
+                Sort by
+            </a>
+            <ul class="dropdown-menu" id="dd-menu-sort"></ul>
+        </li>
+    </ul>
+</div>
+
+<table id="browser" class="browser browser-list list">
+    <thead>
+        <tr>
+            <th class="col btn-checkbox">
+                <div id="selector-toggle">
+                    <div class="btn-checkbox"><div class="checkbox-inner"></div></div>
+                </div>
+            </th>
+            <th class="col name"><h3>Name</h3></th>
+            <th class="col size"><h3>Size</h3></th>
+            <th class="col actions"></th>
+        </tr>
+    </thead>
+    <tbody id="browser-body"></tbody>
+</table>

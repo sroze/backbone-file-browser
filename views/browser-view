@@ -1,1 +1,1 @@
-<p>BONGOUR!! LIst of <%= path %></p>
+<div id="browser-list"></div>
