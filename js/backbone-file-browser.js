@@ -62,6 +62,20 @@
     };
     
     /**
+     * A file metadata.
+     * 
+     */
+    var FileMetadata = Backbone.Model.extend({
+	getValue: function () {
+	    return this.get('value');
+	},
+	
+	getDescription: function () {
+	    return this.get('description');
+	}
+    });
+    
+    /**
      * Options:
      * - file_url
      * 
@@ -69,6 +83,9 @@
      * - id
      */
     var File = Backbone.Model.extend({
+	TYPE_FILE: 1,
+	TYPE_FOLDER: 2,
+	
         constructor: function (attributes, options) {
             Backbone.Model.apply(this, arguments);
             this.options = options;
@@ -78,6 +95,17 @@
                 return userOptions.file_url.replace('__file_id__', self.model.get('id'));
             }
         },
+        
+        // Parse the metadatas
+        parse: function (resp, options) {
+            if (resp.metadatas != undefined) {
+        	for (var key in resp.metadatas) {
+        	    resp.metadatas[key] = new FileMetadata(resp.metadatas[key], options);
+        	}
+            }
+            
+            return resp;
+        },
     
         // Return object that represents this model for browser
         getBrowserData: function () {
@@ -86,12 +114,19 @@
             }, this.toJSON());
         },
         
+        getMetadata: function (key) {
+            var metadatas = this.get('metadatas');
+            if (metadatas[key] != undefined) {
+        	return metadatas[key];
+            }
+        },
+        
         isFile: function () {
-            return true;
+            return this.get('type') == this.TYPE_FILE;
         },
         
         isFolder: function () {
-            return false;
+            return this.get('type') == this.TYPE_FOLDER;
         },
     });
     
@@ -142,9 +177,9 @@
      * 
      */
     var InformationView = Backbone.DeferedView.extend({
-    tagName:"div",
+	tagName:"div",
         templateName: "browser-information",
-        className: "browser-information",
+        className: "browser-information span2",
         provider: null,
 
         initialize:function () {
@@ -248,6 +283,7 @@
 
         tagName:'div',
         templateName: "browser-list",
+        className: 'row-fluid',
         selected: null,
         availableColumns: {
             "btn-checkbox": null,
@@ -258,6 +294,8 @@
         },
         breadcrumb: null,
         informationView: null,
+        synched: false,
+        templateLoaded: false,
 
         initialize:function () {
             this.selected = new FileCollection([], {
@@ -270,9 +308,21 @@
             this.model.bind("columnsChange", this.columnsChanged, this);
             this.model.bind("selectionChange", this.selectionChanged, this);
             this.model.bind("add", this.addDataObject, this);
+            this.model.bind("sync", function () {
+        	this.synched = true;
+        	this.isLoaded(undefined);
+            }, this);
 
             // Add informations views
             // TODO this.breadcrumb = new BrowserBreadcrumbView({path: userOptions.path, userId: userOptions.userId, context: "folder"});
+        },
+        
+        isLoaded: function (loaded) {
+            if (loaded != undefined) {
+        	this.templateLoaded = loaded;
+            }
+            
+            Backbone.DeferedView.prototype.isLoaded.apply(this, [this.templateLoaded && this.synched]);
         },
         
         setSorting: function (key, sort) {
@@ -432,8 +482,7 @@
             // Create the information view
             if (this.informationView == null) {
                 this.informationView = new InformationView({model: this.selected});
-                
-                var iv = this.informationView;
+                $(this.el).append(this.informationView.deferedRender().el);
             }
             
             // Refresh browser bar and its events
@@ -445,9 +494,6 @@
         
         // Add a file
         addDataObject: function (file) {
-            // Remove loading state
-            $('.loading', this.el).hide();
-            
             // Add object view
             if (userOptions.viewType == "list") {
                 $('table#browser tbody#browser-body', this.el).append(new ItemView({model:file, listView: this}).deferedRender().el);

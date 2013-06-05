@@ -2,5 +2,4 @@
     <div class="btn-checkbox"><div class="checkbox-inner"></div></div>
 </td>
 <td class="col name"><p><a href="#tree/<%= id %>"><i></i><%= name %></a></p></td>
-<td class="col size"><p>size<!-- size != undefined ? displaySize(size) : '-' --></p></td>
-<td class="col actions">ACTIONS</td>
+<td class="col size"><p><%= metadatas.fileSize.getValue() != null ? displaySize(metadatas.fileSize.getValue()) : '-' %></p></td>
