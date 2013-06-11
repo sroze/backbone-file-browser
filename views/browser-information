@@ -1,24 +1,51 @@
-<% if (selection && selection.length > 0) { %>
-    <% if (selection.length == 1) { var file = selection.at(0); %>
-    <h2><%= file.get('name') %></h2>
-    <div class="row-fluid" id="size">
-        <div class="span4 label">Size</div>
-        <div class="span8 value"><%= file.isFile() ? displaySize(this.model.at(0).getMetadata("size")) : '-' %></div>
-    </div>
-    <% } else { var files = selection.toArray(), sum = 0; %>
-    <h2>Selection (<%= selection.length %>)</h2>
-        <% for (var i = 0; i < files.length; i++) { var file = files[i]; sum += file.isFile() ? parseInt(file.getMetadata("size")) : 0; %>
-        <div class="row-fluid size">
-            <div class="span9 name"><%= file.get("name") %></div>
-            <div class="span3 label"><%= file.isFile() ? displaySize(file.getMetadata("size")) : '-' %></div>
+<% if (current && selection.length <= 1) { %>
+    <% if (selection.length  == 1) { var file = selection.at(0); } else { var file = current; } %>
+    <h2><i class="icon-<%= file.isFile() ? 'file' : 'folder' %>"></i> <%= file.get('name') %></h2>
+    <div class="row-fluid buttons">
+        <div class="span6">
+            <% if (file.isFile()) { %><a href="#" class="btn btn-primary">Download</a><% } %>
         </div>
-        <% } %>
-    <div class="row-fluid size">
-        <div class="span9 right"><em>Total</em></div>
-        <div class="span3 label"><%= displaySize(sum) %></div>
+        <div class="span6">
+            <button class="btn btn-danger">Delete</button>
+        </div>
     </div>
-    <% } %>
-<% } else { %>
-   <h2><i></i> Information</h2>
-   
+    <h3>
+        <span class="title">Description</span>
+        <span class="link"><i class="icon-pencil" id="edit_description"></i></span>
+        <div class="divider">
+            <div class="divider-inner"></div>
+        </div>
+    </h3>
+    <p id="file_description" data-type="textarea"><% var desc = file.getMetadata('description').getValue(); %><%= desc ? desc : 'None' %></p>
+    
+    <h3>
+        <span class="title">Informations</span>
+        <div class="divider">
+            <div class="divider-inner"></div>
+        </div>
+    </h3>
+    <p>Créé le <%= displayDate(file.getMetadata('createdDate').getValue()) %></p>
+    <p>Modifié le <%= displayDate(file.getMetadata('modifiedDate').getValue()) %></p>
+<% } else if (selection && selection.length > 1) { var sum = 0; %>
+    <h2><i class="icon-tag"></i> Selection (<%= selection.length %>)</h2>
+    <h3>
+        <span class="title">Selected files</span>
+        <div class="divider">
+            <div class="divider-inner"></div>
+        </div>
+    </h3>
+    <ul>
+        <% for (var i = 0; i < selection.length; i++) { var file = selection.at(i); if (file.isFile()) { sum += file.isFile() ? parseInt(file.getMetadata("fileSize").getValue()) : 0; %>
+        <li><span class="name"><%= file.get("name") %></span> <small>(<%= file.isFile() ? displaySize(file.getMetadata("fileSize").getValue()) : '-' %>)</small></li>
+        <% }} %>
+    </ul>
+    
+    <div class="row-fluid buttons">
+        <div class="span6">
+            <a href="#" class="btn btn-primary">Download (~<%= displaySize(sum) %>)</a>
+        </div>
+        <div class="span6">
+            <button class="btn btn-danger">Delete</button>
+        </div>
+    </div>
 <% } %>

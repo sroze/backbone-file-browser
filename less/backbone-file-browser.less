@@ -3,9 +3,8 @@
 .browser {
     .loading {
         min-height: 300px;
-        background: url(../images/loading.gif) center no-repeat;
+        background: url(../images/loading.gif) no-repeat center;
     }
-    
     div.browser-information {
         margin-left: 0;
         width: 17.02126%;
@@ -27,10 +26,51 @@
             font-weight: bold;
             margin: 0;
             padding: 1px 0 1px 10px;
+        }
+        
+        h3 {
+            line-height: 20px;
+            padding-left: 5px;
             
-            i {
-                background-position: -32px 0;
+            span.title {
+                background: #fff;
+                color: #999;
+                float: left;
+                font-size: 11px;
+                font-weight: bold;
+                padding-right: 5px;
+                text-transform: uppercase;
+                z-index: 1;
             }
+            span.link {
+                background: #fff;
+                float: right;
+                outline: none;
+                padding-left: 5px;
+                z-index: 1;
+            }
+            div.divider {
+                padding-top: 10px;
+                
+                div.divider-inner {
+                    border-top: 1px solid #f2f2f2;
+                }
+            }
+        }
+        
+        i#edit_description {
+            cursor: pointer;
+        }
+        .editable-click {
+            border-bottom: none;
+        }
+        p {
+            padding-left: 5px;
+        }
+        
+        div.buttons {
+            padding-top: 10px;
+            text-align: center;
         }
     }
     
@@ -42,7 +82,180 @@
         margin: 4px;
         
         background: url(../images/icons/sprite.png) no-repeat;
+        
+        &.icon-file {
+            background-position: 0 0;
+        }
+        &.icon-folder {
+            background-position: -16px 0;
+        }
+        &.icon-tag {
+            background-position: -32px 0;
+        }
+        &.icon-pencil {
+            background-position: -80px -16px;
+        }
+        &.icon-ok {
+            background-position: -96px -16px;
+        }
+        &.icon-remove {
+            background-position: -96px 0;
+        }
+        &.icon-gear {
+            background-position: -48px 0;
+        }
     }
+    
+    .browser-bar {
+        position: relative;
+        ul#settings {
+            padding: 0;
+            li#display-columns-toggle ul#dd-menu-columns li label, li#sort-toggle ul#dd-menu-sort  li label {
+                margin-bottom: 0;
+                padding: 4px 10px;
+            }
+            li#sort-toggle {
+                ul#dd-menu-sort {
+                    margin-left: 0;
+                    li {
+                        label {
+                            div.btn-group {
+                                padding-right: 6px;
+                            }
+                        }
+                    }
+                }
+            }
+            li#type-toggle {
+                margin-bottom: 5px;
+                div.btn-group {
+                    width: 100%;
+                    button {
+                        width: 50%;
+                        border-width: 0 0 1px;
+                        border-bottom-right-radius: 0;
+                        border-bottom-left-radius: 0;
+                    }
+                }
+            }
+            li {
+                & > a {
+                    padding: 6px 20px 6px 10px;
+                }
+            }
+            li#display-columns-toggle {
+                ul#dd-menu-columns {
+                    margin-left: 0;
+                    li {
+                        label {
+                            input {
+                                vertical-align: top;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        a#settings-button {
+            position: absolute;
+            right: 5px;
+            top: 6px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        div.breadcrumb {
+            margin-bottom: 0;
+            border-radius: 0;
+            border-bottom: 1px solid #ccc;
+        }
+        ul.breadcrumb {
+            margin-right: 50px;
+            li {
+                i {
+                    padding-right: 5px;
+                }
+            }
+        }
+        
+        /**
+         * breadcrumb styles.
+         * 
+         */
+        .breadcrumb
+        {
+            margin: 0;
+            overflow: hidden;
+        }
+        .breadcrumb ul
+        {
+            margin: 0;
+            padding: 0;
+            height: 21px;
+            display: block;
+        }
+        .breadcrumb ul li
+        {
+            display: block;
+            float: left;
+            position: relative;
+            height: 21px;
+            overflow: hidden;
+            line-height: 21px;
+            margin: 0px 6px 0px 0;
+            padding: 0px 10px 0px 0;
+            font-size: .9167em;
+            background: url(../images/breadcrumb/chevron.gif) no-repeat 100% 0;
+        }
+        .breadcrumb ul li div.chevronOverlay
+        {
+            position: absolute;
+            right: 0;
+            top: 0;
+            z-index: 2;
+        }
+        .breadcrumb ul li span
+        {
+            display: block;
+            overflow: hidden;
+        }
+        .breadcrumb ul li a
+        {
+            display: block;
+            position: relative;
+            height: 21px;
+            line-height: 21px;
+            overflow: hidden;
+            float: left;
+        }
+        .breadcrumb ul li.first a
+        {
+            height: 16px !important;
+            text-indent:-1000em;
+            width:16px;
+            padding: 0;
+            margin-top: 2px;
+            overflow: hidden;
+            background:url(../images/breadcrumb/home.gif) no-repeat 0 0;
+        }
+        .breadcrumb ul li.first a:hover
+        {
+            background-position: 0 -16px;
+        }
+        .breadcrumb ul li.last
+        {
+            background: none;
+            margin-right: 0;
+            padding-right: 0;
+        }
+        .chevronOverlay
+        {
+            display: none;
+            background: url(../images/breadcrumb/chevron.gif) no-repeat 100% 0;
+            width: 13px;
+            height: 20px;
+        }
+    }
+        
 }
 
 table.browser {
@@ -229,7 +442,7 @@ table.browser {
         width: 20%;
     }
     .col.name {
-        width: 70%;
+        width: 80%;
     }
     
     /**
@@ -277,3 +490,29 @@ table.browser {
         border: 1px solid #4D90FE;
     }
 }
+
+/* Float Clearing
+ ---------------------------------------------------------------------*/
+
+.module:after
+{
+    clear: both;
+    content: ".";
+    display: block;
+    height: 0;
+    visibility: hidden;
+}
+
+/* float clearing for IE6 */
+* html .module
+{
+    height: 1%;
+    overflow: visible;
+}
+
+/* float clearing for IE7 */
+* + html .module
+{
+    min-height: 1%;
+}
+
