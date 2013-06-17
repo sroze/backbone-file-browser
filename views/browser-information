@@ -7,9 +7,17 @@
             <% if (file.isFolder()) { %><button class="btn btn-primary" id="upload" disabled="disabled">Upload</button><% } %>
         </div>
         <div class="span6">
+            <% if (file.isFile()) { %><button class="btn btn-danger" id="delete">Delete</button><% } %>
+            <% if (file.isFolder()) { %><a href="<%= file.getMetadata('shareUrl').getValue() %>" class="btn btn-success">Share</a><% } %>
+        </div>
+    </div>
+    <% if (file.isFolder()) { %>
+    <div class="row-fluid buttons">
+        <div class="span6">
             <button class="btn btn-danger" id="delete">Delete</button>
         </div>
     </div>
+    <% } %>
     <h3>
         <span class="title">Description</span>
         <span class="link"><i class="icon-pencil" id="edit_description"></i></span>
