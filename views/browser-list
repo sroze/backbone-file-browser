@@ -1,4 +1,4 @@
-<div class="span10">
+<div class="span10 vscrollwrapper">
     <table id="browser" class="browser browser-list list">
         <thead>
             <tr>

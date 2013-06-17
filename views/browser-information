@@ -3,10 +3,10 @@
     <h2><i class="icon-<%= file.isFile() ? 'file' : 'folder' %>"></i> <%= file.get('name') %></h2>
     <div class="row-fluid buttons">
         <div class="span6">
-            <% if (file.isFile()) { %><a href="#" class="btn btn-primary">Download</a><% } %>
+            <% if (file.isFile()) { %><a href="<%= file.getMetadata('downloadUrl').getValue() %>" class="btn btn-primary">Download</a><% } %>
         </div>
         <div class="span6">
-            <button class="btn btn-danger">Delete</button>
+            <button class="btn btn-danger" id="delete">Delete</button>
         </div>
     </div>
     <h3>
@@ -42,10 +42,10 @@
     
     <div class="row-fluid buttons">
         <div class="span6">
-            <a href="#" class="btn btn-primary">Download (~<%= displaySize(sum) %>)</a>
+            <button disabled="disabled" class="btn btn-primary">Download (~<%= displaySize(sum) %>)</button>
         </div>
         <div class="span6">
-            <button class="btn btn-danger">Delete</button>
+            <button class="btn btn-danger" id="delete">Delete</button>
         </div>
     </div>
 <% } %>

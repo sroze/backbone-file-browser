@@ -107,6 +107,12 @@
         
         getDescription: function () {
             return this.get('description');
+        },
+        
+        // Override save() fonction to put URL of file in parameter
+        save: function (file) {
+            this.url = file.url()+"/metadata";
+            Backbone.Model.prototype.save.apply(this, []);
         }
     });
     
@@ -291,15 +297,20 @@
         	title: 'Enter description',
         	placement: 'left'
             }).on('save', function(e, params) {
-        	selected_model.setMetadata("description", params.newValue);
-        	selected_model.save();
+        	var description = selected_model.getMetadata("description");
+        	description.setValue(params.newValue);
+        	description.save(selected_model);
             });
             
             
             $('i#edit_description', this.el).click(function(){
         	editable_field.editable('show');
         	return false;
-            })
+            });
+            
+            $('button#delete', this.el).click(function(){
+        	selected_model.remove();
+            });
         },
         
         computeData: function () {
@@ -421,7 +432,7 @@
 
         tagName:'div',
         templateName: "browser-list",
-        className: 'row-fluid',
+        className: 'row-fluid browser-list',
         selected: null,
         availableColumns: {
             "btn-checkbox": null,
@@ -704,6 +715,7 @@
     var BaseView = Backbone.DeferedView.extend({
         currentPath: 'root',
         tagName: 'div',
+        className: 'browser',
         loadedCountDown: 0,
         
         initialize: function ()

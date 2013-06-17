@@ -4,8 +4,8 @@
 <ul class="dropdown-menu pull-right" id="settings">
     <li id="type-toggle">
         <div class="btn-group" id="btn-group-list-type">
-            <button class="btn" id="btn-list-list" rel="tooltip" title="List view"><i></i></button>
-            <button class="btn" id="btn-list-icons" rel="tooltip" title="Icons view"><i></i></button>
+            <button class="btn" id="btn-list-list" rel="tooltip" title="List view"><i class="icon-list"></i></button>
+            <button class="btn" id="btn-list-icons" rel="tooltip" title="Icons view"><i class="icon-icons"></i></button>
         </div>
     </li>
     <li class="dropdown-submenu pull-left" id="display-columns-toggle">
@@ -15,7 +15,6 @@
         <ul class="dropdown-menu" id="dd-menu-columns">
             <li><input type="checkbox"> Name</li>
             <li><input type="checkbox"> Size</li>
-            <li><input type="checkbox"> Your rating</li>
         </ul>
     </li>
     <li class="dropdown-submenu pull-left" id="sort-toggle">

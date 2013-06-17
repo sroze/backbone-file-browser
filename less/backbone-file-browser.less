@@ -8,6 +8,9 @@
     div.browser-information {
         margin-left: 0;
         width: 17.02126%;
+        margin-bottom: 20px;
+        border-left: 1px solid #ccc;
+        height: 100%;
         
         h2 {
             height: 35px;
@@ -73,6 +76,9 @@
             text-align: center;
         }
     }
+    div.browser-list {
+        position: relative;
+    }
     
     i {
         display: inline-block;
@@ -104,12 +110,20 @@
         &.icon-gear {
             background-position: -48px 0;
         }
+        &.icon-list {
+            background-position: -64px -16px;
+        }
+        &.icon-icons {
+            background-position: -48px -16px;
+        }
     }
     
     .browser-bar {
         position: relative;
         ul#settings {
             padding: 0;
+            margin: -1px;
+                
             li#display-columns-toggle ul#dd-menu-columns li label, li#sort-toggle ul#dd-menu-sort  li label {
                 margin-bottom: 0;
                 padding: 4px 10px;
@@ -126,6 +140,7 @@
                     }
                 }
             }
+            
             li#type-toggle {
                 margin-bottom: 5px;
                 div.btn-group {
