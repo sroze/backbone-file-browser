@@ -369,8 +369,8 @@
         },
         
         // Dispatch selection event to browser list view
-        setSelected: function (boolean) {
-            this.options.listView.setSelected(this.model, boolean);
+        setSelected: function (b) {
+            this.options.listView.setSelected(this.model, b);
         },
 
         render:function (eventName) {
