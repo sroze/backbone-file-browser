@@ -1,5 +1,5 @@
 <td class="col btn-checkbox">
     <div class="btn-checkbox"><div class="checkbox-inner"></div></div>
 </td>
-<td class="col name"><p><a href="#tree/<%= id %>"><i></i><%= name %></a></p></td>
-<td class="col size"><p><%= metadatas.fileSize.getValue() != null ? displaySize(metadatas.fileSize.getValue()) : '-' %></p></td>
+<td class="col name"><p><% if (file.isFolder()) { %><a href="#tree/<%= file.get('id') %>"><% } else { %><span><% } %><i></i><%= file.get('name') %><% if (file.isFolder()) { %></a><% } else { %></span><% } %></p></td>
+<td class="col size"><p><%= file.getMetadata('fileSize').getValue() != null ? displaySize(file.getMetadata('fileSize').getValue()) : '-' %></p></td>

@@ -11,6 +11,10 @@
                 <th class="col size"><h3>Size</h3></th>
             </tr>
         </thead>
-        <tbody id="browser-body"></tbody>
+        <tbody id="browser-body">
+            <tr class="no-data">
+                <td colspan="4">There's no children.</td>
+            </tr>
+        </tbody>
     </table>
 </div>

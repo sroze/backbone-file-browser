@@ -196,11 +196,6 @@
             
             return resp;
         },
-    
-        // Return object that represents this model for browser
-        getBrowserData: function () {
-            return this.toJSON();
-        },
         
         getMetadata: function (key) {
             var metadatas = this.get('metadatas');
@@ -381,7 +376,7 @@
         render:function (eventName) {
             var view = this;
             $(this.el).attr("id", "object-"+this.model.get("uid"));
-            $(this.el).html(this.template(_.extend(this.model.getBrowserData(), this.getHelpers())));
+            $(this.el).html(this.template(_.extend({file: this.model}, this.getHelpers())));
             
             // Add class
             if (this.model.isFile()) {
@@ -474,6 +469,7 @@
             this.model.on("sync", function () {
                 this.synched = true;
                 this.isLoaded(true);
+                this.deferedRender();
             }, this);
         },
         
@@ -628,12 +624,25 @@
                 self.addDataObject(file);
             }, this);
             
+            if (this.model.models.length == 0 && this.isLoaded()) {
+        	$('.no-data', this.el).each(function(){
+        	    var tag = $(this).prop("tagName");
+        	    
+        	    if (tag == "TR") {
+        		$(this).css('display', 'table-row');
+        	    } else {
+        		$(this).css('display', 'block');
+        	    }
+        	});
+            }
+            
             // Create the information view
             if (this.informationView == null) {
                 this.informationView = new InformationView({model: this.selected});
-                $(this.el).append(this.informationView.deferedRender().el);
             }
-            
+            $(this.el).append(this.informationView.deferedRender().el);
+
+            // Dispatch columns changed
             this.columnsChanged(userOptions.displayedColumns);
             
             return this;

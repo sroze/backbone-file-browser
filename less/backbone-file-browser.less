@@ -288,6 +288,17 @@ table.browser {
             padding-bottom: 1px;
         }
     }
+    tr.no-data {
+        display: none;
+        
+        > td {
+            padding: 40px;
+            text-align: center;
+        }
+    }
+    tr.item.file td {
+        cursor: pointer;
+    }
     div.col {
         float: left;
         height: 100%;
