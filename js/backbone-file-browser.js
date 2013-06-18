@@ -83,8 +83,10 @@
         viewType: "list",
         sortColumns: {},
         displayedColumns: ["btn-checkbox", "icon", "name", "size", "actions"],
-        showBar: true
-    }, browserCache = new Backbone.Cache();
+        showBar: true,
+        upload_url: '/upload'
+    }, browserCache = new Backbone.Cache(), 
+       uploadField = $('<input id="fileupload" type="file" name="files[]" multiple="multiple">');
     
     /**
      * A file metadata.
@@ -340,32 +342,158 @@
         initialize:function () {
             this.model.on("all", this.deferedRender, this);
             this.model.on("destroy", this.close, this);
+            
+            // Unbind uploadField
+            uploadField.off('fileuploadadd');
         },
 
         render:function (eventName) {
-            var view = this;
+            var self = this;
             $(this.el).html(this.template(this.computeData()));
             
             // Add events
             var selected_model = this.model.length > 0 ? this.model.at(0) : currentFolder;
             var editable_field = $('#file_description', this.el).editable({
-        	title: 'Enter description',
-        	placement: 'left'
+            	title: 'Enter description',
+            	placement: 'left'
             }).on('save', function(e, params) {
-        	var description = selected_model.getMetadata("description");
-        	description.setValue(params.newValue);
-        	description.save(selected_model);
+            	var description = selected_model.getMetadata("description");
+            	description.setValue(params.newValue);
+            	description.save(selected_model);
             });
             
-            
+            // Add inline description edition fonctionality
             $('i#edit_description', this.el).click(function(){
-        	editable_field.editable('show');
-        	return false;
+            	editable_field.editable('show');
+            	return false;
             });
             
+            // Allow to delete a file
             $('button#delete', this.el).click(function(){
-        	selected_model.remove();
+                selected_model.remove();
             });
+            
+            // Add "Upload" button functionnality
+            $('#upload-button', this.el).click(function(){
+                uploadField.appendTo($('div#popover-upload', self.el).first().toggleClass('show')
+            	    .find('#fileinput-button'));
+            });
+            
+            // Add start uploads event
+            var uploadsList = $('div#popover-upload div.popover-content', this.el);
+            $('button#start-downloads-button', this.el).click(function(){
+                var data = null, index = null;
+                $('> div', uploadsList).not('.no-data').each(function(){
+                    var item = $(this);
+                    var item_data = item.data();
+                    
+                    if (item_data.state() != undefined && item_data.state() != 'pending') {
+                        return;
+                    }
+                    
+                    // Get the right file index
+                    if (item_data != data) {
+                        data = item_data;
+                        index = 0;
+                    } else {
+                        index++;
+                    }
+                    
+                    // Get file object
+                    var file = data.files[index];
+                    
+                    // Display progress bar instead of size
+                    // and set default upload state
+                    $('span.size', item).addClass('hidden');
+                    $('div.progress', item).removeClass('hidden').find('.bar').css('width', '0px').parent()
+                        .find('.progress-label').html('0 of '+self.getHelpers().displaySize(file.size));
+                    
+                    // Submit upload
+                    item_data.context = item;
+                    item_data.submit();
+                });
+            });
+            
+            // Cancel uploads event
+            $('button#cancel-downloads-button', this.el).click(function(){
+                $('> div', uploadsList).not('.no-data').each(function(){
+                    var item = $(this);
+                    item.data().abort();
+                    item.remove();
+                });
+                
+                $('.no-data', uploadsList).css('display', '');
+            });
+            
+            // Add uploadField events
+            uploadField.off('fileuploadadd').on('fileuploadadd', function (e, data) {
+                // Set data context
+                data.context = $('<div />').appendTo(uploadsList).data(data);
+                
+                // Update popover title
+                $('h3', uploadsList.parent()).html('Upload files to &laquo; '+selected_model.get("name")+' &raquo;')
+                
+            	// A file is added
+            	$.each(data.files, function (index, file) {
+            	    $('.no-data', uploadsList).css('display', 'none');
+                    var file_item = $('div#popover-upload-item', self.el).first().clone().removeClass('hidden').appendTo(data.context);
+                    $('span.name', file_item).text(file.name);
+                    $('span.size', file_item).html(self.getHelpers().displaySize(file.size));
+                    $('button#btn-cancel', file_item).click(function(){
+                        // Remove item of index "index" in data.files array
+                        self.removeIndex(data.files, index);
+                        
+                        // Remove current line or parent
+                        if (file_item.parent().children().length == 1) {
+                            file_item.parent().remove();
+                        } else {
+                            file_item.remove();
+                        }
+                        
+                        // Check there's still data
+                        if ($('> div', uploadsList).not('.no-data').length == 0) {
+                            $('.no-data', uploadsList).css('display', '');
+                        }
+                    });
+        	    });
+            }).on('fileuploadprogress', function (e, data) {
+                $.each(data.files, function (index, file) {
+                    var node = $(data.context.children()[index]), progress_data = data.context.data().progress();
+                    var progress = parseInt(progress_data.loaded / progress_data.total * 100, 10);
+                
+                    $('div.progress', node).removeClass('hidden').find('.bar').css('width', progress+'%').parent()
+                        .find('.progress-label').html(self.getHelpers().displaySize(progress_data.loaded)+' of '+self.getHelpers().displaySize(progress_data.total));
+                });
+            }).on('fileuploadfail', function (e, data) {
+                $.each(data.errorThrown ? data.files : data.result.files, function (index, file) {
+                    $(data.context.children()[index])
+                        .find('div.progress').addClass('hidden')
+                        .parent()
+                        .find('span.message')
+                        .removeClass('hidden')
+                        .addClass('error')
+                        .html('<i class="icon-error"></i>'+(data.errorThrown ? data.errorThrown.message : file.error));
+                });
+            }).on('fileuploaddone', function (e, data) {
+                $.each(data.result.files, function (index, file) {
+                    $(data.context.children()[index])
+                        .find('div.progress').addClass('hidden')
+                        .parent()
+                        .find('span.message')
+                        .removeClass('hidden')
+                        .addClass('done')
+                        .html('<i class="icon-success"></i> Updated');
+                });
+            })
+        },
+        
+        removeIndex: function (array, index)
+        {
+            if (index != -1) {
+                var rest = array.slice(index + 1 || array.length);
+                array.length = index < 0 ? array.length + index : index;
+                return array.push.apply(this, rest);
+            }
         },
         
         computeData: function () {
@@ -790,6 +918,11 @@
         initialize: function ()
         {
             userOptions = $.extend({}, userOptions, this.options || {});
+            $(uploadField).fileupload({
+            	dataType: 'json',
+            	url: userOptions.upload_url,
+                autoUpload: false
+            });
         },
         
         render: function ()

@@ -3,18 +3,18 @@
     <h2><i class="icon-<%= file.isFile() ? 'file' : 'folder' %>"></i> <%= file.get('name') %></h2>
     <div class="row-fluid buttons">
         <div class="span6">
-            <% if (file.isFile()) { %><a href="<%= file.getMetadata('downloadUrl').getValue() %>" class="btn btn-primary">Download</a><% } %>
-            <% if (file.isFolder()) { %><button class="btn btn-primary" id="upload" disabled="disabled">Upload</button><% } %>
+            <% if (file.isFile()) { %><a href="<%= file.getMetadata('downloadUrl').getValue() %>" class="btn btn-primary"><i class="icon-download"></i>Download</a><% } %>
+            <% if (file.isFolder()) { %><button class="btn btn-primary" id="upload-button"><i class="icon-upload"></i>Upload</button><% } %>
         </div>
         <div class="span6">
-            <% if (file.isFile()) { %><button class="btn btn-danger" id="delete">Delete</button><% } %>
-            <% if (file.isFolder()) { %><a href="<%= file.getMetadata('shareUrl').getValue() %>" class="btn btn-success">Share</a><% } %>
+            <% if (file.isFile()) { %><button class="btn btn-danger" id="delete"><i class="icon-delete"></i>Delete</button><% } %>
+            <% if (file.isFolder()) { %><a href="<%= file.getMetadata('shareUrl').getValue() %>" class="btn btn-success"><i class="icon-share"></i>Share</a><% } %>
         </div>
     </div>
     <% if (file.isFolder()) { %>
     <div class="row-fluid buttons">
         <div class="span6">
-            <button class="btn btn-danger" id="delete">Delete</button>
+            <button class="btn btn-danger" id="delete"><i class="icon-delete"></i>Delete</button>
         </div>
     </div>
     <% } %>
@@ -44,8 +44,8 @@
         </div>
     </h3>
     <ul>
-        <% for (var i = 0; i < selection.length; i++) { var file = selection.at(i); if (file.isFile()) { sum += file.isFile() ? parseInt(file.getMetadata("fileSize").getValue()) : 0; %>
-        <li><span class="name"><%= file.get("name") %></span> <small>(<%= file.isFile() ? displaySize(file.getMetadata("fileSize").getValue()) : '-' %>)</small></li>
+        <% for (var i = 0; i < selection.length; i++) { var file = selection.at(i), file_size = file.isFile() && file.getMetadata("fileSize").getValue() != null ? parseInt(file.getMetadata("fileSize").getValue()) : 0; if (file.isFile()) { sum += file_size; %>
+        <li><span class="name"><%= file.get("name") %></span> <small>(<%= file_size > 0 ? displaySize(file_size) : '-' %>)</small></li>
         <% }} %>
     </ul>
     
@@ -54,7 +54,35 @@
             <button disabled="disabled" class="btn btn-primary">Download (~<%= displaySize(sum) %>)</button>
         </div>
         <div class="span6">
-            <button class="btn btn-danger" id="delete">Delete</button>
+            <button class="btn btn-danger" id="delete"><i class="icon-delete"></i>Delete</button>
         </div>
     </div>
-<% } %>
+    <% } %>
+    <div class="popover fade left in" id="popover-upload">
+        <div class="arrow"></div>
+        <h3 class="popover-title">Upload files</h3>
+        <div class="popover-content">
+            <div class="no-data"><em>Add files.</em></div>
+        </div>
+        <footer>
+            <button class="btn btn-warning pull-right" id="cancel-downloads-button"><i class="icon-cancel"></i>Cancel uploads</button>
+            <span class="btn btn-success fileinput-button" id="fileinput-button">
+                <i class="icon-plus"></i>
+                <span>Add files...</span>
+            </span>
+            <button class="btn btn-primary" id="start-downloads-button"><i class="icon-start"></i>Start uploads</button>
+        </footer>
+    </div>
+    <div id="popover-upload-item" class="hidden row-fluid">
+        <div class="span6"><span class="name"></span></div>
+        <div class="span3">
+            <span class="size"></span>
+            <div class="progress hidden">
+                <div class="progress-label"></div>
+                <div class="bar"></div>
+            </div>
+            <span class="message hidden"></span>
+        </div>
+        <div class="span3"><button class="btn btn-warning btn-small" id="btn-cancel"><i class="icon-remove"></i>Cancel</button></div>
+    </div>
+</div>

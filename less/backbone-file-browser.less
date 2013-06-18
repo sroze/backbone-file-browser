@@ -11,6 +11,7 @@
         margin-bottom: 20px;
         border-left: 1px solid #ccc;
         height: 100%;
+        position: relative;
         
         h2 {
             height: 35px;
@@ -31,7 +32,7 @@
             padding: 1px 0 1px 10px;
         }
         
-        h3 {
+        > h3 {
             line-height: 20px;
             padding-left: 5px;
             
@@ -75,6 +76,46 @@
             padding-top: 10px;
             text-align: center;
         }
+        
+        div.popover {
+            max-width: 500px;
+            width: 500px;
+            left: -493px;
+            top: 8px;
+            
+            .arrow {
+                top: 55px;
+            }
+            
+            footer {
+                background: none repeat scroll 0 0 #F4F4F4;
+                border-top: 1px solid #DDDDDD;
+                padding: 10px;
+            }
+            
+            div {
+                overflow: hidden;
+            }
+            
+            .message.error {
+                color: #BD362F;
+            }
+            .message.done {
+                color: #57ba48;
+            }
+            
+            div.progress {
+                position: relative;
+                
+                div.progress-label {
+                    position: absolute; 
+                    width: 100%; 
+                    text-align: center;
+                    text-shadow: 0 0 3px rgba(0, 0, 0, 0.9);
+                    color: #fff;
+                }
+            }
+        }
     }
     div.browser-list {
         position: relative;
@@ -90,7 +131,7 @@
         background: url(../images/icons/sprite.png) no-repeat;
         
         &.icon-file {
-            background-position: 0 0;
+            background-position: -112px -16px;
         }
         &.icon-folder {
             background-position: -16px 0;
@@ -116,6 +157,33 @@
         &.icon-icons {
             background-position: -48px -16px;
         }
+        &.icon-cancel {
+            background-position: 0px -32px;
+        }
+        &.icon-start {
+            background-position: -32px -32px;
+        }
+        &.icon-upload {
+            background-position: -16px -32px;
+        }
+        &.icon-share {
+            background-position: -64px -32px;
+        }
+        &.icon-delete {
+            background-position: -48px -32px;
+        }
+        &.icon-plus {
+            background-position: -80px -32px;
+        }
+        &.icon-error {
+            background-position: -96px -32px;
+        }
+        &.icon-success {
+            background-position: -112px -32px;
+        }
+    }
+    .btn > i {
+        margin: 3px 10px 3px 0;
     }
     
     .browser-bar {
