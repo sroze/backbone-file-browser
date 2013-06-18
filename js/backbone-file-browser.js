@@ -202,6 +202,66 @@
             if (metadatas[key] != undefined) {
                 return metadatas[key];
             }
+            
+            return undefined;
+        },
+        
+        getClassType: function () {
+            var mimeType = this.getMetadata('mimeType');
+            if (mimeType == undefined) {
+        	return undefined;
+            }
+            
+            var value = mimeType.getValue();
+            if (value.substring(0, 5) == 'image') value = 'image';
+            if (value.substring(0, 5) == 'audio') value = 'sound';
+            if (value.substring(0, 5) == 'video') value = 'video';
+            
+            switch (value) {
+            case 'text':
+            case 'application/vnd.google-apps.document':
+            case 'application/vnd.google-apps.kix':
+            case 'application/vnd.google-apps.spreadsheet':
+            case 'application/msword':
+        	
+        	return 'text';
+        	break;
+            case 'archive':
+            case 'application/zip':
+            case 'application/x-rar-compressed':
+            case 'multipart/x-zip':
+        	
+        	return 'archive';
+        	break;
+            case 'pdf':
+            case 'application/pdf':
+        	
+        	return 'pdf';
+        	break;
+            case 'sound':
+            case 'application/vnd.google-apps.audio':
+        	
+        	return 'sound';
+        	break;
+            case 'image':
+            case 'application/vnd.google-apps.drawing':
+            case 'application/vnd.google-apps.photo':
+
+        	return 'image';
+        	break;
+            case 'movie':
+            case 'application/vnd.google-apps.video':
+
+        	return 'movie';
+        	break;
+            case 'presentation':
+            case 'application/vnd.google-apps.presentation':
+
+        	return 'presentation';
+        	break;
+            }
+            
+            return null;
         },
         
         setMetadata: function (key, value) {
@@ -375,7 +435,6 @@
 
         render:function (eventName) {
             var view = this;
-            $(this.el).attr("id", "object-"+this.model.get("uid"));
             $(this.el).html(this.template(_.extend({file: this.model}, this.getHelpers())));
             
             // Add class
@@ -384,6 +443,7 @@
             } else if (this.model.isFolder()) {
                 $(this.el).addClass('folder');
             }
+            $(this.el).addClass(this.model.getClassType());
             
             // Add checkbox event
             $('div.btn-checkbox', this.el).unbind('click').bind('click', function(e) {
