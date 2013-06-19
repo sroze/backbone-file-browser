@@ -341,7 +341,7 @@
 
         initialize:function () {
             this.model.on("all", this.deferedRender, this);
-            this.model.on("destroy", this.close, this);
+            this.model.on("destroy", this.deferedRender, this);
             
             // Unbind uploadField
             uploadField.off('fileuploadadd');
@@ -370,13 +370,15 @@
             
             // Allow to delete a file
             $('button#delete', this.el).click(function(){
-                selected_model.remove();
+                $.each(self.model.models, function(index, model) {
+                    model.destroy();
+                });
             });
             
             // Add "Upload" button functionnality
             $('#upload-button', this.el).click(function(){
-                uploadField.appendTo($('div#popover-upload', self.el).first().toggleClass('show')
-            	    .find('#fileinput-button'));
+                uploadField.detach().appendTo($('div#popover-upload', self.el).first().toggleClass('show')
+            	    .find('#fileinput-button').first());
             });
             
             // Add start uploads event
@@ -436,7 +438,7 @@
             	// A file is added
             	$.each(data.files, function (index, file) {
             	    $('.no-data', uploadsList).css('display', 'none');
-                    var file_item = $('div#popover-upload-item', self.el).first().clone().removeClass('hidden').appendTo(data.context);
+                    var file_item = $('div#popover-upload-item', self.el).last().clone().removeClass('hidden').appendTo(data.context);
                     $('span.name', file_item).text(file.name);
                     $('span.size', file_item).html(self.getHelpers().displaySize(file.size));
                     $('button#btn-cancel', file_item).click(function(){
@@ -456,7 +458,7 @@
                         }
                     });
         	    });
-            }).on('fileuploadprogress', function (e, data) {
+            }).off('fileuploadprogress').on('fileuploadprogress', function (e, data) {
                 $.each(data.files, function (index, file) {
                     var node = $(data.context.children()[index]), progress_data = data.context.data().progress();
                     var progress = parseInt(progress_data.loaded / progress_data.total * 100, 10);
@@ -464,27 +466,48 @@
                     $('div.progress', node).removeClass('hidden').find('.bar').css('width', progress+'%').parent()
                         .find('.progress-label').html(self.getHelpers().displaySize(progress_data.loaded)+' of '+self.getHelpers().displaySize(progress_data.total));
                 });
-            }).on('fileuploadfail', function (e, data) {
+            }).off('fileuploadfail').on('fileuploadfail', function (e, data) {
                 $.each(data.errorThrown ? data.files : data.result.files, function (index, file) {
                     $(data.context.children()[index])
                         .find('div.progress').addClass('hidden')
                         .parent()
-                        .find('span.message')
-                        .removeClass('hidden')
-                        .addClass('error')
-                        .html('<i class="icon-error"></i>'+(data.errorThrown ? data.errorThrown.message : file.error));
-                });
-            }).on('fileuploaddone', function (e, data) {
-                $.each(data.result.files, function (index, file) {
-                    $(data.context.children()[index])
-                        .find('div.progress').addClass('hidden')
+                        .find('button#btn-cancel')
+                        .addClass('hidden')
                         .parent()
                         .find('span.message')
                         .removeClass('hidden')
-                        .addClass('done')
-                        .html('<i class="icon-success"></i> Updated');
+                        .addClass('error')
+                        .html('<i class="icon-error"></i>'+((data.errorThrown ? data.errorThrown.message : file.error) || 'Unknown error'));
                 });
+            }).off('fileuploaddone').on('fileuploaddone', function (e, data) {
+                $.each(data.result, function (index, file) {
+                    var context = $(data.context.children()[index]);
+                    context.find('div.progress').addClass('hidden');
+                    context.find('button#btn-cancel').addClass('hidden');
+                    
+                    var message = context.find('span.message').removeClass('hidden');
+                    if (file.error) {
+                        message.addClass('error')
+                            .html('<i class="icon-error"></i> '+file.error);
+                    } else {
+                        message.addClass('done')
+                            .html('<i class="icon-success"></i> Uploaded');
+                    }
+                });
+                
+                // Refresh current directory listing
+                if (self.options.list) {
+                    self.options.list.model.fetch();
+                }
             })
+        },
+        
+        close: function () {
+            // Detach upload field to keep it
+            uploadField.detach();
+            
+            // Call super close
+            Backbone.DeferedView.prototype.close.call(this);
         },
         
         removeIndex: function (array, index)
@@ -826,7 +849,7 @@
             
             // Create the information view
             if (this.informationView == null) {
-                this.informationView = new InformationView({model: this.selected});
+                this.informationView = new InformationView({model: this.selected, list: this});
             }
             $(this.el).append(this.informationView.deferedRender().el);
 
